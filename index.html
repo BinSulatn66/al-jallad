@@ -2,174 +2,193 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>المتنمر - Al-Mutanammer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>الجلاّد - Al-Jallad</title>
     <style>
+        /* Royal Saudi Aesthetic: Gold on Black */
         * {
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
+            margin: 0;
+            padding: 0;
         }
         body {
             background-color: #000000;
-            color: #FFD700;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 0;
+            color: #D4AF37; /* Royal Gold */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             display: flex;
             flex-direction: column;
             height: 100vh;
+            height: -webkit-fill-available;
             overflow: hidden;
         }
         #header {
             padding: 20px;
             text-align: center;
-            border-bottom: 2px solid #FFD700;
-            font-size: 24px;
+            border-bottom: 2px solid #D4AF37;
+            font-size: 26px;
             font-weight: bold;
-            background-color: #000000;
-            z-index: 10;
+            letter-spacing: 1px;
+            background: linear-gradient(to bottom, #1a1a1a, #000000);
+            box-shadow: 0 4px 10px rgba(212, 175, 55, 0.2);
+            flex-shrink: 0;
         }
         #chat-container {
             flex: 1;
             overflow-y: auto;
-            padding: 15px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             background-color: #000000;
             -webkit-overflow-scrolling: touch;
         }
         .message {
-            margin-bottom: 15px;
-            padding: 12px 18px;
-            border-radius: 20px;
+            margin-bottom: 20px;
+            padding: 14px 20px;
+            border-radius: 18px;
             max-width: 85%;
             font-size: 18px;
-            line-height: 1.4;
+            line-height: 1.5;
             word-wrap: break-word;
+            position: relative;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
         }
         .user-message {
             align-self: flex-start;
-            background-color: #333333;
+            background-color: #222222;
             color: #FFFFFF;
-            border-bottom-right-radius: 5px;
+            border: 1px solid #333333;
+            border-bottom-right-radius: 4px;
         }
         .bot-message {
             align-self: flex-end;
-            background-color: #FFD700;
+            background-color: #D4AF37;
             color: #000000;
-            border-bottom-left-radius: 5px;
-            font-weight: 600;
+            border-bottom-left-radius: 4px;
+            font-weight: 700;
+        }
+        #typing-indicator {
+            align-self: flex-end;
+            color: #D4AF37;
+            font-size: 14px;
+            font-style: italic;
+            margin-bottom: 15px;
+            display: none;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
         }
         #input-area {
             padding: 15px;
-            background-color: #000000;
-            border-top: 1px solid #333;
+            padding-bottom: calc(15px + env(safe-area-inset-bottom));
+            background-color: #0a0a0a;
+            border-top: 1px solid #D4AF37;
             display: flex;
-            gap: 10px;
-            padding-bottom: env(safe-area-inset-bottom, 15px);
+            gap: 12px;
+            flex-shrink: 0;
         }
         #user-input {
             flex: 1;
             background-color: #1a1a1a;
-            border: 1px solid #FFD700;
-            border-radius: 25px;
-            padding: 12px 20px;
-            color: #FFD700;
+            border: 1px solid #D4AF37;
+            border-radius: 30px;
+            padding: 14px 22px;
+            color: #D4AF37;
             font-size: 18px;
             outline: none;
             -webkit-appearance: none;
         }
         #send-btn {
-            background-color: #FFD700;
+            background-color: #D4AF37;
             color: #000000;
             border: none;
-            border-radius: 25px;
-            padding: 0 25px;
+            border-radius: 30px;
+            padding: 0 28px;
             font-size: 18px;
-            font-weight: bold;
+            font-weight: 800;
             cursor: pointer;
-            min-width: 80px;
             -webkit-appearance: none;
+            transition: transform 0.1s;
         }
         #send-btn:active {
-            opacity: 0.8;
-        }
-        .typing {
-            font-style: italic;
-            font-size: 14px;
-            margin-bottom: 10px;
-            color: #FFD700;
+            transform: scale(0.95);
+            background-color: #B8962E;
         }
     </style>
 </head>
 <body>
 
-    <div id="header">المتنمر</div>
+    <div id="header">الجلاّد</div>
 
     <div id="chat-container">
-        <div class="message bot-message">ارحب.. اخلص وش عندك؟ جايك الدور في الطقطقة.</div>
+        <div class="message bot-message">ارحب يا بطل.. عطنا ما عندك، والوعد قدام.</div>
     </div>
 
+    <div id="typing-indicator">الجلاّد يجهز الرد المناسب...</div>
+
     <div id="input-area">
-        <input type="text" id="user-input" placeholder="اكتب ردك هنا..." autocomplete="off">
+        <input type="text" id="user-input" placeholder="اكتب كلامك هنا..." autocomplete="off">
         <button id="send-btn" type="button">أرسل</button>
     </div>
 
     <script type="text/javascript">
-        // PURE ES5 JAVASCRIPT - ABSOLUTELY NO ES6+
         (function() {
             var chatContainer = document.getElementById('chat-container');
             var userInput = document.getElementById('user-input');
             var sendBtn = document.getElementById('send-btn');
+            var typingIndicator = document.getElementById('typing-indicator');
 
-            var systemInstructions = "انت 'المتنمر'، بوت سعودي عبقري في الطقطقة والهجاء الساخر. " +
-                "تستخدم لهجة سعودية خليجية بيضاء وذكية جداً. " +
-                "مهمتك: حلل كلام المستخدم بدقة وطقطق عليه بناءً على ما قاله بالضبط. " +
-                "خلك نبيه وسريع البديهة، لا تكرر نكت قديمة. " +
-                "ركز على سقطات كلامه، تفكيره، أو حتى طريقة سؤاله. " +
-                "خلك سليط اللسان بأسلوب كوميدي سعودي (طقطقة ذكية) بدون سب فاحش أو كراهية. " +
-                "الردود يجب ان تكون قصيرة، لاذعة، ومفصلة على مقاس كلام المستخدم.";
+            var systemMsg = "انت 'الجلاّد'، بوت سعودي اسطوري في فن الطقطقة والردود اللاذعة. " +
+                "تستخدم لهجة سعودية خليجية قوية، ذكية، وساخرة جداً. " +
+                "مهمتك: قصف جبهة المستخدم بذكاء بناءً على كلامه. " +
+                "خلك سريع البديهة، لا تكرر نفسك، واستخدم مصطلحات طقطقة سعودية حديثة. " +
+                "الرد لازم يكون قصير، مؤلم كوميدياً، وبدون تجريح خارج الأدب العام. " +
+                "اذا سألك سؤال غبي، سفل فيه. اذا مدح نفسه، نزل فيه. " +
+                "انت الملك هنا وهو جاي يطقطق معك، وره من هو الجلاّد.";
+
+            function scrollToBottom() {
+                setTimeout(function() {
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                }, 100);
+            }
 
             function addMessage(text, isUser) {
                 var msgDiv = document.createElement('div');
                 msgDiv.className = 'message ' + (isUser ? 'user-message' : 'bot-message');
                 msgDiv.innerText = text;
                 chatContainer.appendChild(msgDiv);
-                // Force scroll
-                setTimeout(function() {
-                    chatContainer.scrollTop = chatContainer.scrollHeight;
-                }, 50);
+                scrollToBottom();
             }
 
             function handleSend() {
-                var text = userInput.value;
-                if (!text) return;
-                text = text.replace(/^\s+|\s+$/g, ''); // ES5 trim
+                var val = userInput.value;
+                if (!val) return;
+                var text = val.replace(/^\s+|\s+$/g, '');
                 if (text === "") return;
 
                 addMessage(text, true);
                 userInput.value = '';
                 
-                var typingDiv = document.createElement('div');
-                typingDiv.className = 'typing';
-                typingDiv.innerText = 'المتنمر يحلل تفاهتك...';
-                chatContainer.appendChild(typingDiv);
-                chatContainer.scrollTop = chatContainer.scrollHeight;
+                typingIndicator.style.display = 'block';
+                scrollToBottom();
 
-                // Fallback to GET immediately for maximum compatibility and to bypass potential CORS issues with POST on some mobile browsers
-                var url = 'https://text.pollinations.ai/' + encodeURIComponent(systemInstructions + "\n\nالمستخدم قال: " + text) + '?model=openai';
+                // Robust network call using fetch (ES5 compatible via simple polyfill logic if needed, but modern Safari supports fetch)
+                // Using a reliable prompt structure for Pollinations AI
+                var prompt = encodeURIComponent(systemMsg + "\n\nالمستخدم: " + text);
+                var url = 'https://text.pollinations.ai/' + prompt + '?model=openai';
 
                 var xhr = new XMLHttpRequest();
                 xhr.open('GET', url, true);
                 xhr.onreadystatechange = function() {
                     if (xhr.readyState === 4) {
-                        if (chatContainer.contains(typingDiv)) {
-                            chatContainer.removeChild(typingDiv);
-                        }
+                        typingIndicator.style.display = 'none';
                         if (xhr.status === 200) {
                             addMessage(xhr.responseText, false);
                         } else {
-                            addMessage("حتى النت عندك طفش من وجهك.. جرب ثانية.", false);
+                            addMessage("يا شين السرج على البقرة.. النت عندك فيه بلا، جرب ثانية.", false);
                         }
                     }
                 };
@@ -186,10 +205,8 @@
                 var event = e || window.event;
                 var code = event.keyCode || event.which;
                 if (code === 13) {
-                    if (event.preventDefault) event.preventDefault();
                     handleSend();
                     userInput.blur();
-                    return false;
                 }
             };
         })();
