@@ -104,7 +104,7 @@
     <div id="header">المتنمر</div>
 
     <div id="chat-container">
-        <div class="message bot-message">هلا بالطيب.. وش تبي؟ مستعد تتهزأ ولا بس جايب معك الـ 1.5 ريال اللي بحسابك؟</div>
+        <div class="message bot-message">ارحب.. اخلص وش عندك؟ جايك الدور في الطقطقة.</div>
     </div>
 
     <div id="input-area">
@@ -118,13 +118,13 @@
         var userInput = document.getElementById('user-input');
         var sendBtn = document.getElementById('send-btn');
 
-        var systemPrompt = "انت 'المتنمر'، بوت سعودي طقطقة وهجاء ساخر جداً. " +
-            "تستخدم لهجة سعودية خليجية قوية وبيضاء. " +
-            "وظيفتك تطقطق على المستخدم بكل قسوة مضحكة. " +
-            "ركز على مواضيع: العطالة، التقديم على صندوق الاستثمارات العامة (PIF) وحسابك فيه ريال ونص، " +
-            "ادمان أكياس نيكوتين ديزرت (Desert)، الهياط الفاضي، والسهر اللي ماله فايدة. " +
-            "خلك سليط اللسان بس بدون سب شنيع أو عنصرية أو كراهية. " +
-            "الهدف الضحك والطقطقة (Taqtaqah) فقط. ردودك قصيرة، لاذعة، وسعودية أصيلة.";
+        var systemInstructions = "انت 'المتنمر'، بوت سعودي عبقري في الطقطقة والهجاء الساخر. " +
+            "تستخدم لهجة سعودية خليجية بيضاء وذكية جداً. " +
+            "مهمتك: حلل كلام المستخدم بدقة وطقطق عليه بناءً على ما قاله بالضبط. " +
+            "خلك نبيه وسريع البديهة، لا تكرر نكت قديمة. " +
+            "ركز على سقطات كلامه، تفكيره، أو حتى طريقة سؤاله. " +
+            "خلك سليط اللسان بأسلوب كوميدي سعودي (طقطقة ذكية) بدون سب فاحش أو كراهية. " +
+            "الردود يجب ان تكون قصيرة، لاذعة، ومفصلة على مقاس كلام المستخدم.";
 
         function addMessage(text, isUser) {
             var msgDiv = document.createElement('div');
@@ -143,15 +143,30 @@
             
             var typingDiv = document.createElement('div');
             typingDiv.className = 'typing';
-            typingDiv.innerText = 'المتنمر يجهز لك رد ينهي مسيرتك...';
+            typingDiv.innerText = 'المتنمر يحلل تفاهتك...';
             chatContainer.appendChild(typingDiv);
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
-            var encodedPrompt = encodeURIComponent(systemPrompt + "\n\nالمستخدم قال: " + text);
-            var url = 'https://text.pollinations.ai/' + encodedPrompt;
+            // Updated robust endpoint with model parameter to avoid legacy issues
+            var requestBody = {
+                messages: [
+                    { role: "system", content: systemInstructions },
+                    { role: "user", content: text }
+                ],
+                model: "openai" // Specifically choosing a robust model
+            };
 
-            fetch(url)
+            fetch('https://text.pollinations.ai/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestBody)
+            })
                 .then(function(response) {
+                    if (!response.ok) {
+                        throw new Error('Rate limit or API error');
+                    }
                     return response.text();
                 })
                 .then(function(data) {
@@ -164,7 +179,16 @@
                     if (chatContainer.contains(typingDiv)) {
                         chatContainer.removeChild(typingDiv);
                     }
-                    addMessage("حتى النت عندك طفش من وجهك.. جرب ثانية.", false);
+                    // Fallback to GET request if POST fails, or show error
+                    var fallbackUrl = 'https://text.pollinations.ai/' + encodeURIComponent(systemInstructions + "\nUser: " + text);
+                    fetch(fallbackUrl)
+                        .then(function(res) { return res.text(); })
+                        .then(function(fallbackData) {
+                            addMessage(fallbackData, false);
+                        })
+                        .catch(function() {
+                            addMessage("حتى السيرفر عافك.. جرب ثانية يا بطل.", false);
+                        });
                 });
         }
 
