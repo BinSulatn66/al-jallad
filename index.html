@@ -36,6 +36,7 @@
             display: flex;
             flex-direction: column;
             background-color: #000000;
+            -webkit-overflow-scrolling: touch;
         }
         .message {
             margin-bottom: 15px;
@@ -76,6 +77,7 @@
             color: #FFD700;
             font-size: 18px;
             outline: none;
+            -webkit-appearance: none;
         }
         #send-btn {
             background-color: #FFD700;
@@ -87,6 +89,7 @@
             font-weight: bold;
             cursor: pointer;
             min-width: 80px;
+            -webkit-appearance: none;
         }
         #send-btn:active {
             opacity: 0.8;
@@ -103,69 +106,73 @@
 
     <div id="header">المتنمر</div>
 
-    <div id="chat-container">
+    <div id="chat-container" role="log" aria-live="polite">
         <div class="message bot-message">ارحب.. اخلص وش عندك؟ جايك الدور في الطقطقة.</div>
     </div>
 
     <div id="input-area">
         <input type="text" id="user-input" placeholder="اكتب ردك هنا..." autocomplete="off">
-        <button id="send-btn">أرسل</button>
+        <button id="send-btn" type="button">أرسل</button>
     </div>
 
-    <script>
-        // STRICT ES5 JAVASCRIPT
-        var chatContainer = document.getElementById('chat-container');
-        var userInput = document.getElementById('user-input');
-        var sendBtn = document.getElementById('send-btn');
+    <script type="text/javascript">
+        // PURE ES5 JAVASCRIPT - BULLETPROOF FOR MOBILE SAFARI
+        (function() {
+            var chatContainer = document.getElementById('chat-container');
+            var userInput = document.getElementById('user-input');
+            var sendBtn = document.getElementById('send-btn');
 
-        var systemInstructions = "انت 'المتنمر'، بوت سعودي عبقري في الطقطقة والهجاء الساخر. " +
-            "تستخدم لهجة سعودية خليجية بيضاء وذكية جداً. " +
-            "مهمتك: حلل كلام المستخدم بدقة وطقطق عليه بناءً على ما قاله بالضبط. " +
-            "خلك نبيه وسريع البديهة، لا تكرر نكت قديمة. " +
-            "ركز على سقطات كلامه، تفكيره، أو حتى طريقة سؤاله. " +
-            "خلك سليط اللسان بأسلوب كوميدي سعودي (طقطقة ذكية) بدون سب فاحش أو كراهية. " +
-            "الردود يجب ان تكون قصيرة، لاذعة، ومفصلة على مقاس كلام المستخدم.";
+            var systemInstructions = "انت 'المتنمر'، بوت سعودي عبقري في الطقطقة والهجاء الساخر. " +
+                "تستخدم لهجة سعودية خليجية بيضاء وذكية جداً. " +
+                "مهمتك: حلل كلام المستخدم بدقة وطقطق عليه بناءً على ما قاله بالضبط. " +
+                "خلك نبيه وسريع البديهة، لا تكرر نكت قديمة. " +
+                "ركز على سقطات كلامه، تفكيره، أو حتى طريقة سؤاله. " +
+                "خلك سليط اللسان بأسلوب كوميدي سعودي (طقطقة ذكية) بدون سب فاحش أو كراهية. " +
+                "الردود يجب ان تكون قصيرة، لاذعة، ومفصلة على مقاس كلام المستخدم.";
 
-        function addMessage(text, isUser) {
-            var msgDiv = document.createElement('div');
-            msgDiv.className = 'message ' + (isUser ? 'user-message' : 'bot-message');
-            msgDiv.innerText = text;
-            chatContainer.appendChild(msgDiv);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
+            function addMessage(text, isUser) {
+                var msgDiv = document.createElement('div');
+                msgDiv.className = 'message ' + (isUser ? 'user-message' : 'bot-message');
+                msgDiv.innerText = text;
+                chatContainer.appendChild(msgDiv);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
 
-        function handleSend() {
-            var text = userInput.value.trim();
-            if (!text) return;
+            function handleSend() {
+                var text = userInput.value;
+                if (!text || text.trim() === '') return;
+                
+                text = text.trim();
 
-            addMessage(text, true);
-            userInput.value = '';
-            
-            var typingDiv = document.createElement('div');
-            typingDiv.className = 'typing';
-            typingDiv.innerText = 'المتنمر يحلل تفاهتك...';
-            chatContainer.appendChild(typingDiv);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+                addMessage(text, true);
+                userInput.value = '';
+                
+                var typingDiv = document.createElement('div');
+                typingDiv.className = 'typing';
+                typingDiv.innerText = 'المتنمر يحلل تفاهتك...';
+                chatContainer.appendChild(typingDiv);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
 
-            // Updated robust endpoint with model parameter to avoid legacy issues
-            var requestBody = {
-                messages: [
-                    { role: "system", content: systemInstructions },
-                    { role: "user", content: text }
-                ],
-                model: "openai" // Specifically choosing a robust model
-            };
+                var requestBody = {
+                    messages: [
+                        { role: "system", content: systemInstructions },
+                        { role: "user", content: text }
+                    ],
+                    model: "openai"
+                };
 
-            fetch('https://text.pollinations.ai/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(requestBody)
-            })
+                // Use standard XHR if fetch is missing or for older Safari versions
+                // but fetch is supported in iOS 10.3+. Let's stick to fetch but ensure ES5.
+                fetch('https://text.pollinations.ai/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                })
                 .then(function(response) {
                     if (!response.ok) {
-                        throw new Error('Rate limit or API error');
+                        throw new Error('API Error');
                     }
                     return response.text();
                 })
@@ -179,7 +186,7 @@
                     if (chatContainer.contains(typingDiv)) {
                         chatContainer.removeChild(typingDiv);
                     }
-                    // Fallback to GET request if POST fails, or show error
+                    // Robust fallback to GET
                     var fallbackUrl = 'https://text.pollinations.ai/' + encodeURIComponent(systemInstructions + "\nUser: " + text);
                     fetch(fallbackUrl)
                         .then(function(res) { return res.text(); })
@@ -190,15 +197,22 @@
                             addMessage("حتى السيرفر عافك.. جرب ثانية يا بطل.", false);
                         });
                 });
-        }
-
-        sendBtn.onclick = handleSend;
-
-        userInput.onkeypress = function(e) {
-            if (e.keyCode === 13) {
-                handleSend();
             }
-        };
+
+            sendBtn.onclick = function(e) {
+                e.preventDefault();
+                handleSend();
+            };
+
+            userInput.onkeydown = function(e) {
+                var code = e.keyCode || e.which;
+                if (code === 13) {
+                    e.preventDefault();
+                    handleSend();
+                    userInput.blur(); // Close keyboard on mobile
+                }
+            };
+        })();
     </script>
 </body>
 </html>
