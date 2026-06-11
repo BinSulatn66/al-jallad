@@ -1,43 +1,47 @@
-const https = require('https');
-
 module.exports = async (req, res) => {
-  // Set CORS headers
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  );
-
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
-  }
-
   const { prompt } = req.query;
 
   if (!prompt) {
-    res.status(400).send('Prompt is required');
-    return;
+    return res.status(400).send("Prompt is required");
   }
 
   const systemInstructions = "Role: You are 'Al-Jallad' (The Executioner), a legendary Saudi roaster. " +
     "Language: Saudi Najdi/White dialect (Saudi Gulf). " +
     "Task: Roast the user based on their specific input. Be witty, fast, and savage. " +
     "Style: Use modern Saudi slang. Keep it short and sharp. " +
+    "Context: You are the King of Roasting. If they say something stupid, tear it down. If they act cool, humble them. " +
     "Constraint: Strictly respond ONLY with the roast. No intro, no commentary.";
 
-  const fullPrompt = `${systemInstructions}\n\nUser Input: ${prompt}`;
-  const targetUrl = `https://text.pollinations.ai/${encodeURIComponent(fullPrompt)}?model=openai&system=${encodeURIComponent(systemInstructions)}`;
-
-  https.get(targetUrl, (response) => {
-    let data = '';
-    response.on('data', (chunk) => { data += chunk; });
-    response.on('end', () => {
-      res.status(200).send(data);
+  try {
+    // Using the current Pollinations OpenAI-compatible endpoint
+    const response = await fetch('https://text.pollinations.ai/openai', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        messages: [
+          { role: 'system', content: systemInstructions },
+          { role: 'user', content: prompt }
+        ],
+        model: 'openai',
+        seed: Math.floor(Math.random() * 1000000)
+      }),
     });
-  }).on('error', (err) => {
-    res.status(500).send('API Error: ' + err.message);
-  });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Pollinations API Error:', errorText);
+      return res.status(response.status).send("يا شين السرج على البقرة.. جرب ثانية.");
+    }
+
+    const data = await response.json();
+    const roast = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+    
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.status(200).send(roast || "ما لقيت رد يناسب وجهك.");
+  } catch (error) {
+    console.error('Serverless Function Error:', error);
+    res.status(500).send("حتى السيرفر طفش من وجهك.. جرب ثانية.");
+  }
 };
