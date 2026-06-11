@@ -5,223 +5,67 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>الجلاّد - Al-Jallad</title>
     <style>
-        /* Royal Saudi Aesthetic: Gold on Black */
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            background-color: #000000;
-            color: #D4AF37; /* Royal Gold */
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            height: -webkit-fill-available;
-            overflow: hidden;
-        }
-        #header {
-            padding: 20px;
-            text-align: center;
-            border-bottom: 2px solid #D4AF37;
-            font-size: 26px;
-            font-weight: bold;
-            letter-spacing: 1px;
-            background: linear-gradient(to bottom, #1a1a1a, #000000);
-            box-shadow: 0 4px 10px rgba(212, 175, 55, 0.2);
-            flex-shrink: 0;
-        }
-        #chat-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            background-color: #000000;
-            -webkit-overflow-scrolling: touch;
-        }
-        .message {
-            margin-bottom: 20px;
-            padding: 14px 20px;
-            border-radius: 18px;
-            max-width: 85%;
-            font-size: 18px;
-            line-height: 1.5;
-            word-wrap: break-word;
-            position: relative;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-        }
-        .user-message {
-            align-self: flex-start;
-            background-color: #222222;
-            color: #FFFFFF;
-            border: 1px solid #333333;
-            border-bottom-right-radius: 4px;
-        }
-        .bot-message {
-            align-self: flex-end;
-            background-color: #D4AF37;
-            color: #000000;
-            border-bottom-left-radius: 4px;
-            font-weight: 700;
-        }
-        #typing-indicator {
-            align-self: flex-end;
-            color: #D4AF37;
-            font-size: 14px;
-            font-style: italic;
-            margin-bottom: 15px;
-            display: none;
-            animation: pulse 1.5s infinite;
-        }
-        @keyframes pulse {
-            0% { opacity: 0.5; }
-            50% { opacity: 1; }
-            100% { opacity: 0.5; }
-        }
-        #input-area {
-            padding: 15px;
-            padding-bottom: calc(15px + env(safe-area-inset-bottom));
-            background-color: #0a0a0a;
-            border-top: 1px solid #D4AF37;
-            display: flex;
-            gap: 12px;
-            flex-shrink: 0;
-        }
-        #user-input {
-            flex: 1;
-            background-color: #1a1a1a;
-            border: 1px solid #D4AF37;
-            border-radius: 30px;
-            padding: 14px 22px;
-            color: #D4AF37;
-            font-size: 18px;
-            outline: none;
-            -webkit-appearance: none;
-        }
-        #send-btn {
-            background-color: #D4AF37;
-            color: #000000;
-            border: none;
-            border-radius: 30px;
-            padding: 0 28px;
-            font-size: 18px;
-            font-weight: 800;
-            cursor: pointer;
-            -webkit-appearance: none;
-            transition: transform 0.1s;
-        }
-        #send-btn:active {
-            transform: scale(0.95);
-            background-color: #B8962E;
-        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+        body { background-color: #000000; color: #D4AF37; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        #header { padding: 20px; text-align: center; border-bottom: 2px solid #D4AF37; font-size: 26px; font-weight: bold; background: #000; flex-shrink: 0; }
+        #chat-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; background-color: #000; -webkit-overflow-scrolling: touch; }
+        .message { margin-bottom: 20px; padding: 14px 20px; border-radius: 18px; max-width: 85%; font-size: 18px; line-height: 1.5; word-wrap: break-word; }
+        .user-message { align-self: flex-start; background-color: #222; color: #FFF; border-bottom-right-radius: 4px; }
+        .bot-message { align-self: flex-end; background-color: #D4AF37; color: #000; border-bottom-left-radius: 4px; font-weight: bold; }
+        #typing-indicator { align-self: flex-end; color: #D4AF37; font-size: 14px; font-style: italic; margin-bottom: 15px; display: none; }
+        #input-area { padding: 15px; padding-bottom: calc(15px + env(safe-area-inset-bottom)); background-color: #000; border-top: 1px solid #D4AF37; display: flex; gap: 10px; flex-shrink: 0; }
+        #user-input { flex: 1; background-color: #1a1a1a; border: 1px solid #D4AF37; border-radius: 25px; padding: 12px 20px; color: #D4AF37; font-size: 18px; outline: none; }
+        #send-btn { background-color: #D4AF37; color: #000; border: none; border-radius: 25px; padding: 0 25px; font-size: 18px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
-
     <div id="header">الجلاّد</div>
-
-    <div id="chat-container">
-        <div class="message bot-message">ارحب يا بطل.. عطنا ما عندك، والوعد قدام.</div>
-    </div>
-
-    <div id="typing-indicator">الجلاّد يجهز الرد المناسب...</div>
-
+    <div id="chat-container"><div class="message bot-message">ارحب.. عطنا ما عندك.</div></div>
+    <div id="typing-indicator">الجلاّد يجهز الرد...</div>
     <div id="input-area">
         <input type="text" id="user-input" placeholder="اكتب كلامك هنا..." autocomplete="off">
-        <button id="send-btn" type="button">أرسل</button>
+        <button id="send-btn">أرسل</button>
     </div>
-
     <script type="text/javascript">
         (function() {
-            var chatContainer = document.getElementById('chat-container');
-            var userInput = document.getElementById('user-input');
-            var sendBtn = document.getElementById('send-btn');
-            var typingIndicator = document.getElementById('typing-indicator');
+            var chat = document.getElementById('chat-container');
+            var input = document.getElementById('user-input');
+            var btn = document.getElementById('send-btn');
+            var typing = document.getElementById('typing-indicator');
 
-            // Simplified and shortened system prompt to avoid potential URL length issues
-            var sys = "Role: Saudi 'Al-Jallad' roaster. Dialect: Saudi Najdi. Task: Savage, witty, short roast of user input. Strictly Arabic output.";
-
-            function scrollToBottom() {
-                setTimeout(function() {
-                    chatContainer.scrollTop = chatContainer.scrollHeight;
-                }, 100);
+            function addMsg(text, isUser) {
+                var d = document.createElement('div');
+                d.className = 'message ' + (isUser ? 'user-message' : 'bot-message');
+                d.innerText = text;
+                chat.appendChild(d);
+                chat.scrollTop = chat.scrollHeight;
             }
 
-            function addMessage(text, isUser) {
-                var msgDiv = document.createElement('div');
-                msgDiv.className = 'message ' + (isUser ? 'user-message' : 'bot-message');
-                msgDiv.innerText = text;
-                chatContainer.appendChild(msgDiv);
-                scrollToBottom();
-            }
-
-            function handleSend() {
-                var val = userInput.value;
-                if (!val) return;
-                var text = val.replace(/^\s+|\s+$/g, '');
-                if (text === "") return;
-
-                addMessage(text, true);
-                userInput.value = '';
-                
-                typingIndicator.style.display = 'block';
-                scrollToBottom();
-
-                // Using a simpler URL structure for Pollinations AI to ensure reliability.
-                // We combine system instruction and user message into one clean prompt.
-                var prompt = "Instruction: " + sys + "\nUser says: " + text;
-                var url = 'https://text.pollinations.ai/' + encodeURIComponent(prompt) + '?model=openai';
+            function send() {
+                var text = input.value.trim();
+                if (!text) return;
+                addMsg(text, true);
+                input.value = '';
+                typing.style.display = 'block';
+                chat.scrollTop = chat.scrollHeight;
 
                 var xhr = new XMLHttpRequest();
-                xhr.open('GET', url, true);
+                xhr.open('GET', '/api/roast?prompt=' + encodeURIComponent(text), true);
                 xhr.onreadystatechange = function() {
                     if (xhr.readyState === 4) {
-                        typingIndicator.style.display = 'none';
+                        typing.style.display = 'none';
                         if (xhr.status === 200) {
-                            var response = xhr.responseText;
-                            if (response && response.length > 0) {
-                                addMessage(response, false);
-                            } else {
-                                addMessage("السكوت ابلغ من الرد على وجهك.. جرب ثانية.", false);
-                            }
+                            addMsg(xhr.responseText || "ما لقيت رد يناسب وجهك.", false);
                         } else {
-                            // If API fails, try a secondary simple prompt without complex instructions
-                            var retryUrl = 'https://text.pollinations.ai/' + encodeURIComponent("طقطق على هذا الكلام بلهجة سعودية: " + text);
-                            var xhr2 = new XMLHttpRequest();
-                            xhr2.open('GET', retryUrl, true);
-                            xhr2.onreadystatechange = function() {
-                                if (xhr2.readyState === 4) {
-                                    if (xhr2.status === 200) {
-                                        addMessage(xhr2.responseText, false);
-                                    } else {
-                                        addMessage("الشبكة عندك تعبانة مثلك، جرب ثانية.", false);
-                                    }
-                                }
-                            };
-                            xhr2.send();
+                            addMsg("النت عندك تعبان مثلك.. جرب ثانية.", false);
                         }
                     }
                 };
                 xhr.send();
             }
 
-            sendBtn.onclick = function(e) {
-                if (e && e.preventDefault) e.preventDefault();
-                handleSend();
-                return false;
-            };
-
-            userInput.onkeydown = function(e) {
-                var event = e || window.event;
-                var code = event.keyCode || event.which;
-                if (code === 13) {
-                    handleSend();
-                    userInput.blur();
-                }
-            };
+            btn.onclick = send;
+            input.onkeydown = function(e) { if ((e.which || e.keyCode) === 13) { send(); input.blur(); } };
         })();
     </script>
 </body>
