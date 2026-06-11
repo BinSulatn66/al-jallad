@@ -141,13 +141,12 @@
             var sendBtn = document.getElementById('send-btn');
             var typingIndicator = document.getElementById('typing-indicator');
 
-            var systemMsg = "انت 'الجلاّد'، بوت سعودي اسطوري في فن الطقطقة والردود اللاذعة. " +
-                "تستخدم لهجة سعودية خليجية قوية، ذكية، وساخرة جداً. " +
-                "مهمتك: قصف جبهة المستخدم بذكاء بناءً على كلامه. " +
-                "خلك سريع البديهة، لا تكرر نفسك، واستخدم مصطلحات طقطقة سعودية حديثة. " +
-                "الرد لازم يكون قصير، مؤلم كوميدياً، وبدون تجريح خارج الأدب العام. " +
-                "اذا سألك سؤال غبي، سفل فيه. اذا مدح نفسه، نزل فيه. " +
-                "انت الملك هنا وهو جاي يطقطق معك، وره من هو الجلاّد.";
+            var systemInstructions = "Role: You are 'Al-Jallad' (The Executioner), a legendary Saudi roaster. " +
+                "Language: Saudi Najdi/White dialect (Saudi Gulf). " +
+                "Task: Roast the user based on their specific input. Be witty, fast, and savage. " +
+                "Style: Use modern Saudi slang. Keep it short and sharp. " +
+                "Context: You are the King of Roasting. If they say something stupid, tear it down. If they act cool, humble them. " +
+                "Constraint: Strictly respond ONLY with the roast. No intro, no commentary.";
 
             function scrollToBottom() {
                 setTimeout(function() {
@@ -175,10 +174,10 @@
                 typingIndicator.style.display = 'block';
                 scrollToBottom();
 
-                // Robust network call using fetch (ES5 compatible via simple polyfill logic if needed, but modern Safari supports fetch)
-                // Using a reliable prompt structure for Pollinations AI
-                var prompt = encodeURIComponent(systemMsg + "\n\nالمستخدم: " + text);
-                var url = 'https://text.pollinations.ai/' + prompt + '?model=openai';
+                // Pollinations API requires systematic prompt engineering for behavior control.
+                // We pass instructions followed by user input.
+                var fullPrompt = systemInstructions + "\n\nUser Input: " + text;
+                var url = 'https://text.pollinations.ai/' + encodeURIComponent(fullPrompt) + '?model=openai&system=' + encodeURIComponent(systemInstructions);
 
                 var xhr = new XMLHttpRequest();
                 xhr.open('GET', url, true);
@@ -186,9 +185,14 @@
                     if (xhr.readyState === 4) {
                         typingIndicator.style.display = 'none';
                         if (xhr.status === 200) {
-                            addMessage(xhr.responseText, false);
+                            var response = xhr.responseText;
+                            if (response && response.length > 0) {
+                                addMessage(response, false);
+                            } else {
+                                addMessage("السكوت ابلغ من الرد على وجهك.. جرب ثانية.", false);
+                            }
                         } else {
-                            addMessage("يا شين السرج على البقرة.. النت عندك فيه بلا، جرب ثانية.", false);
+                            addMessage("يا شين السرج على البقرة.. الشبكة عندك تعبانة مثلك، جرب ثانية.", false);
                         }
                     }
                 };
