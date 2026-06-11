@@ -141,12 +141,8 @@
             var sendBtn = document.getElementById('send-btn');
             var typingIndicator = document.getElementById('typing-indicator');
 
-            var systemInstructions = "Role: You are 'Al-Jallad' (The Executioner), a legendary Saudi roaster. " +
-                "Language: Saudi Najdi/White dialect (Saudi Gulf). " +
-                "Task: Roast the user based on their specific input. Be witty, fast, and savage. " +
-                "Style: Use modern Saudi slang. Keep it short and sharp. " +
-                "Context: You are the King of Roasting. If they say something stupid, tear it down. If they act cool, humble them. " +
-                "Constraint: Strictly respond ONLY with the roast. No intro, no commentary.";
+            // Simplified and shortened system prompt to avoid potential URL length issues
+            var sys = "Role: Saudi 'Al-Jallad' roaster. Dialect: Saudi Najdi. Task: Savage, witty, short roast of user input. Strictly Arabic output.";
 
             function scrollToBottom() {
                 setTimeout(function() {
@@ -174,10 +170,10 @@
                 typingIndicator.style.display = 'block';
                 scrollToBottom();
 
-                // Pollinations API requires systematic prompt engineering for behavior control.
-                // We pass instructions followed by user input.
-                var fullPrompt = systemInstructions + "\n\nUser Input: " + text;
-                var url = 'https://text.pollinations.ai/' + encodeURIComponent(fullPrompt) + '?model=openai&system=' + encodeURIComponent(systemInstructions);
+                // Using a simpler URL structure for Pollinations AI to ensure reliability.
+                // We combine system instruction and user message into one clean prompt.
+                var prompt = "Instruction: " + sys + "\nUser says: " + text;
+                var url = 'https://text.pollinations.ai/' + encodeURIComponent(prompt) + '?model=openai';
 
                 var xhr = new XMLHttpRequest();
                 xhr.open('GET', url, true);
@@ -192,7 +188,20 @@
                                 addMessage("السكوت ابلغ من الرد على وجهك.. جرب ثانية.", false);
                             }
                         } else {
-                            addMessage("يا شين السرج على البقرة.. الشبكة عندك تعبانة مثلك، جرب ثانية.", false);
+                            // If API fails, try a secondary simple prompt without complex instructions
+                            var retryUrl = 'https://text.pollinations.ai/' + encodeURIComponent("طقطق على هذا الكلام بلهجة سعودية: " + text);
+                            var xhr2 = new XMLHttpRequest();
+                            xhr2.open('GET', retryUrl, true);
+                            xhr2.onreadystatechange = function() {
+                                if (xhr2.readyState === 4) {
+                                    if (xhr2.status === 200) {
+                                        addMessage(xhr2.responseText, false);
+                                    } else {
+                                        addMessage("الشبكة عندك تعبانة مثلك، جرب ثانية.", false);
+                                    }
+                                }
+                            };
+                            xhr2.send();
                         }
                     }
                 };
