@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>الجلاد | Al-Jallad</title>
+    <style>
+        body {
+            background-color: #000000;
+            color: #FFD700;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .container {
+            width: 90%;
+            max-width: 500px;
+            padding: 20px;
+            border: 2px solid #FFD700;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px #555;
+        }
+        p.subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.8;
+        }
+        .input-group {
+            margin-bottom: 25px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2rem;
+            background: #000;
+            border: 1px solid #FFD700;
+            color: #FFD700;
+            border-radius: 8px;
+            box-sizing: border-box;
+            outline: none;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            background-color: #FFD700;
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: transform 0.1s;
+        }
+        button:active {
+            transform: scale(0.98);
+        }
+        #result-area {
+            margin-top: 30px;
+            padding: 20px;
+            min-height: 100px;
+            border-top: 1px dashed #FFD700;
+            font-size: 1.4rem;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+        .footer {
+            margin-top: 40px;
+            font-size: 0.8rem;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>الجلاد</h1>
+        <p class="subtitle">استعد للجلد يا بطل</p>
+        
+        <div class="input-group">
+            <input type="text" id="target-name" placeholder="ادخل اسمك أو وضعك الحالي..." autocomplete="off">
+            <button id="roast-btn">اجلدني</button>
+        </div>
+
+        <div id="result-area"></div>
+
+        <div class="footer">
+            تم التطوير بواسطة الجلاد © 2026
+        </div>
+    </div>
+
+    <script>
+        var roasts = [
+            "انت شكلك من اللي يصور القهوة وكاتب 'صباح الخير' والساعة 4 العصر.. يا عاطل!",
+            "رصيدك 1.5 ريال وتدور تمويل من صندوق الاستثمارات العامة؟ كمل نومك بس.",
+            "مخلص فلوسك كلها على 'ديزرت' وتشتكي من الغلاء؟ يا رجل ارحمنا.",
+            "مسوي فيها مستثمر بالعملات الرقمية وانت شاري 'دوج كوين' بـ 50 ريال ومنتظر المليون.",
+            "شكلك من النوع اللي يلبس شتوي في عز الصيف عشان الكشخة.. الحرارة 50 يا ذكي!",
+            "كاتب في البايو 'رائد أعمال' وانت اصلاً تبيع اشتراكات نتفليكس مكركة.",
+            "طالب قرض عشان تسافر وتصور في لندن وتأكل اندومي هناك.. عيب والله.",
+            "انت اللي تسأل 'وش أفضل تخصص' وانت باقي ما نجحت في القدرات؟",
+            "سيارتك يبيلها توضيب وقاعد تسأل عن جنوط 'كروم'.. رتب أولوياتك يا حبيب.",
+            "تحط عطر رخيص وتدخل المجلس كأنك فواحة خربانة.. اتقِ الله في خشمنا.",
+            "تدور وظيفة مدير وانت ما تعرف تفتح ملف وورد؟ خلك على التيك توك أصلح لك.",
+            "مسوي زحمة في شارع التحلية بسيارة إيجار؟ ترى والله واضحة.",
+            "تطلب 'قهوة مختصة' بـ 40 ريال وانت مديون لراعي البقالة اللي جنبكم.",
+            "جوالك آيفون 15 برو ماكس وشاشته مكسرة لها سنة.. صلحها أول بعدين هياط."
+        ];
+
+        var roastBtn = document.getElementById('roast-btn');
+        var resultArea = document.getElementById('result-area');
+        var inputField = document.getElementById('target-name');
+
+        roastBtn.addEventListener('click', function() {
+            var name = inputField.value.trim();
+            var randomIndex = Math.floor(Math.random() * roasts.length);
+            var selectedRoast = roasts[randomIndex];
+            
+            if (name) {
+                resultArea.innerHTML = "يا " + name + "، " + selectedRoast;
+            } else {
+                resultArea.innerHTML = selectedRoast;
+            }
+            
+            if (window.navigator.vibrate) {
+                window.navigator.vibrate(50);
+            }
+        });
+
+        inputField.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                roastBtn.click();
+            }
+        });
+    </script>
+</body>
+</html>
