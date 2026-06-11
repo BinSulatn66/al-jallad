@@ -106,7 +106,7 @@
 
     <div id="header">المتنمر</div>
 
-    <div id="chat-container" role="log" aria-live="polite">
+    <div id="chat-container">
         <div class="message bot-message">ارحب.. اخلص وش عندك؟ جايك الدور في الطقطقة.</div>
     </div>
 
@@ -116,7 +116,7 @@
     </div>
 
     <script type="text/javascript">
-        // PURE ES5 JAVASCRIPT - BULLETPROOF FOR MOBILE SAFARI
+        // PURE ES5 JAVASCRIPT - ABSOLUTELY NO ES6+
         (function() {
             var chatContainer = document.getElementById('chat-container');
             var userInput = document.getElementById('user-input');
@@ -135,14 +135,17 @@
                 msgDiv.className = 'message ' + (isUser ? 'user-message' : 'bot-message');
                 msgDiv.innerText = text;
                 chatContainer.appendChild(msgDiv);
-                chatContainer.scrollTop = chatContainer.scrollHeight;
+                // Force scroll
+                setTimeout(function() {
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                }, 50);
             }
 
             function handleSend() {
                 var text = userInput.value;
-                if (!text || text.trim() === '') return;
-                
-                text = text.trim();
+                if (!text) return;
+                text = text.replace(/^\s+|\s+$/g, ''); // ES5 trim
+                if (text === "") return;
 
                 addMessage(text, true);
                 userInput.value = '';
@@ -153,63 +156,40 @@
                 chatContainer.appendChild(typingDiv);
                 chatContainer.scrollTop = chatContainer.scrollHeight;
 
-                var requestBody = {
-                    messages: [
-                        { role: "system", content: systemInstructions },
-                        { role: "user", content: text }
-                    ],
-                    model: "openai"
-                };
+                // Fallback to GET immediately for maximum compatibility and to bypass potential CORS issues with POST on some mobile browsers
+                var url = 'https://text.pollinations.ai/' + encodeURIComponent(systemInstructions + "\n\nالمستخدم قال: " + text) + '?model=openai';
 
-                // Use standard XHR if fetch is missing or for older Safari versions
-                // but fetch is supported in iOS 10.3+. Let's stick to fetch but ensure ES5.
-                fetch('https://text.pollinations.ai/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(requestBody)
-                })
-                .then(function(response) {
-                    if (!response.ok) {
-                        throw new Error('API Error');
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', url, true);
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4) {
+                        if (chatContainer.contains(typingDiv)) {
+                            chatContainer.removeChild(typingDiv);
+                        }
+                        if (xhr.status === 200) {
+                            addMessage(xhr.responseText, false);
+                        } else {
+                            addMessage("حتى النت عندك طفش من وجهك.. جرب ثانية.", false);
+                        }
                     }
-                    return response.text();
-                })
-                .then(function(data) {
-                    if (chatContainer.contains(typingDiv)) {
-                        chatContainer.removeChild(typingDiv);
-                    }
-                    addMessage(data, false);
-                })
-                .catch(function(err) {
-                    if (chatContainer.contains(typingDiv)) {
-                        chatContainer.removeChild(typingDiv);
-                    }
-                    // Robust fallback to GET
-                    var fallbackUrl = 'https://text.pollinations.ai/' + encodeURIComponent(systemInstructions + "\nUser: " + text);
-                    fetch(fallbackUrl)
-                        .then(function(res) { return res.text(); })
-                        .then(function(fallbackData) {
-                            addMessage(fallbackData, false);
-                        })
-                        .catch(function() {
-                            addMessage("حتى السيرفر عافك.. جرب ثانية يا بطل.", false);
-                        });
-                });
+                };
+                xhr.send();
             }
 
             sendBtn.onclick = function(e) {
-                e.preventDefault();
+                if (e && e.preventDefault) e.preventDefault();
                 handleSend();
+                return false;
             };
 
             userInput.onkeydown = function(e) {
-                var code = e.keyCode || e.which;
+                var event = e || window.event;
+                var code = event.keyCode || event.which;
                 if (code === 13) {
-                    e.preventDefault();
+                    if (event.preventDefault) event.preventDefault();
                     handleSend();
-                    userInput.blur(); // Close keyboard on mobile
+                    userInput.blur();
+                    return false;
                 }
             };
         })();
